@@ -25,14 +25,14 @@ class Scraper:
         return items
 
     def write_property_urls():
-        path = os.path.join(pathlib.Path(__file__).parent.resolve(), "../../data")
+        path = os.path.join(pathlib.Path(__file__).parent.resolve(), "../data")
         try:
             os.mkdir("data")
         except OSError as error: 
             print(error)  
         file_location = os.path.join(path, "realestate_urls.csv")
         with get_context("fork").Pool() as pool:
-            gen = list(tuple(pool.map(Scraper._get_properties_url, range(1, 301))))
+            gen = list(tuple(pool.map(Scraper._get_properties_url, range(1, 300))))
         with open(file_location, "w", encoding="utf-8") as realestate_file:
             for apt_url in gen:
                 for url in apt_url:
