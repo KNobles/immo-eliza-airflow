@@ -1,9 +1,3 @@
-import json
-from selenium.webdriver.common.by import By
-import requests
-from requests import Session
-from bs4 import BeautifulSoup
-
 class Property:
     def __init__(self, json_obj) -> None:
         self.property_data = json_obj

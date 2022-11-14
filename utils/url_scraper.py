@@ -2,7 +2,7 @@ import os
 import pathlib
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from multiprocessing import get_context, Pool
+from multiprocessing import get_context
 class Scraper:
     root_url = "https://www.immoweb.be/en"
     search_apartment_url = root_url + "/search/apartment/for-sale" 
