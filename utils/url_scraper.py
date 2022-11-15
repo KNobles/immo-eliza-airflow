@@ -16,7 +16,7 @@ class Scraper:
         items = []
         for property_type in Scraper.search_property_type_url:
             print(f"PAGE N°{page_num} of {property_type}")
-            driver.get(property_type + f"?countries=BE&isAPublicSale=false&page={page_num}&orderBy=relevance")
+            driver.get(property_type + f"?countries=BE&isAPublicSale=false&page={page_num}&orderBy=newest")
             elements = driver.find_elements(By.XPATH, '//h2[@class="card__title card--result__title"]')
             for item in elements:
                 items.append(item.find_element(By.CLASS_NAME, "card__title-link").get_attribute("href"))
