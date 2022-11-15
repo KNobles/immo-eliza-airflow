@@ -10,9 +10,10 @@ class Scraper:
     search_property_type_url = [search_apartment_url, search_house_url]
 
     def _get_properties_url(page_num):
+        path = os.path.join(pathlib.Path(__file__).parent.resolve(), "../driver/geckodriver")
         options = webdriver.FirefoxOptions()
         options.headless = True
-        driver = webdriver.Firefox(options=options)
+        driver = webdriver.Firefox(executable_path=path,options=options)
         items = []
         for property_type in Scraper.search_property_type_url:
             print(f"PAGE N°{page_num} of {property_type}")
