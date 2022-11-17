@@ -74,7 +74,7 @@ class PropertyDataWriter:
     def write_data_to_file():
         dic = defaultdict(list)
         new_dic = {}
-        file_location = os.path.join(pathlib.Path(__file__).parent.resolve(), "../data", "realestate_urls.csv")
+        file_location = "airflow/plugins/scraper/data/realestate_urls.csv"
         with open(file_location, "r") as f:
             with ThreadPoolExecutor(max_workers=14) as exec:
                 res = [exec.submit(PropertyDataWriter.append_to_dict, url, dic) for url in f.readlines()]
