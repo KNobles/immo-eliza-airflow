@@ -6,7 +6,8 @@ import pathlib
 import pandas as pd
 from requests import Session
 from bs4 import BeautifulSoup
-from utils.collect_property_data import Property
+from scraper.utils.collect_property_data import Property
+
 class PropertyDataWriter:
     columns = [
     "id",

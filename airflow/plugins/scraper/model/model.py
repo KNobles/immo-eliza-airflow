@@ -14,7 +14,7 @@ import pickle
 
 #IMPORT RAW DATA---------------------------------------------------
 
-df = pd.read_csv('Property_structured_data.csv')
+df = pd.read_csv("airflow/plugins/scraper/data/properties.csv")
 
 #CLEAN & TRANSFORM RAW DATA----------------------------------------
 
@@ -166,7 +166,7 @@ X_train = scaler.transform(X_train)
 X_test = scaler.transform(X_test)
 
 #SAVE SCALER---------------------------------------------------------------
-with open("immo_scaler.pkl","wb") as scalefile:
+with open("airflow/plugins/scraper/model/immo_scaler.pkl","wb") as scalefile:
     pickle.dump(scaler, scalefile)
 print('Saved Scaler')
 
@@ -180,7 +180,7 @@ poly_model = LinearRegression()
 poly_model.fit(X_train_poly, Y_train)
 
 #SAVE POLY FEATURES---------------------------------------------------------------
-with open("immo_poly_features.pkl","wb") as polyfeaturesfile:
+with open("airflow/plugins/scraper/model/immo_poly_features.pkl","wb") as polyfeaturesfile:
     pickle.dump(poly_features, polyfeaturesfile)
 print('Saved poly features')
 
@@ -197,7 +197,7 @@ rmse_test = np.sqrt(mean_squared_error(Y_test, y_test_predict))
 r2_test = r2_score(Y_test, y_test_predict)
 
 #SAVE MODEL---------------------------------------------------------------
-with open("immo_model.pkl","wb") as modelfile:
+with open("airflow/plugins/scraper/model/immo_model.pkl","wb") as modelfile:
     pickle.dump(poly_model, modelfile)
 print('Saved Model')
 
