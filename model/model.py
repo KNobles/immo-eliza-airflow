@@ -1,13 +1,7 @@
 import pandas as pd
 import numpy as np
 import statistics
-
-import seaborn as sns
-from matplotlib import pyplot as plt
-
 from scipy import stats
-
-import operator
 
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
