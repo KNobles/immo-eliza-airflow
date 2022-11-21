@@ -1,7 +1,8 @@
-from typing import Literal, Optional
-from pydantic import BaseModel
 import json
 import pandas as pd
+from pydantic import BaseModel
+from typing import Literal, Optional
+
 class Property(BaseModel):
     area: int
     property_type: Literal["HOUSE", "APARTMENT"]

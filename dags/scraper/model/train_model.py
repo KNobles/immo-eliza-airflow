@@ -1,8 +1,9 @@
-import pandas as pd
-import numpy as np
+import pickle
 import statistics
-from scipy import stats
+import numpy as np
+import pandas as pd
 
+from scipy import stats
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
@@ -10,7 +11,6 @@ from sklearn.metrics import r2_score
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import OneHotEncoder
-import pickle
 
 def train_model():
     #IMPORT RAW DATA---------------------------------------------------
