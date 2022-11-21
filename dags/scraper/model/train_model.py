@@ -15,7 +15,7 @@ from sklearn.preprocessing import OneHotEncoder
 def train_model():
     #IMPORT RAW DATA---------------------------------------------------
 
-    df = pd.read_csv("airflow/plugins/scraper/data/properties.csv")
+    df = pd.read_csv("dags/scraper/data/properties.csv")
 
     #CLEAN & TRANSFORM RAW DATA----------------------------------------
 
@@ -120,30 +120,15 @@ def train_model():
 
     filtered_atributes = [
                         'price',
-                        #'id',
-                        #'locality',
-                        #'postal_code',
-                        #'region',
-                        #'province',
-                        #'type_of_property',
-                        #'subtype_of_property',
-                        #'type_of_sale',
                         'number_of_bedrooms',
                         'surface',
-                        #'kitchen_type',
                         'fully_equipped_kitchen',
-                        #'furnished',
                         'open_fire',
-                        #'terrace',
                         'terrace_surface',
                         'garden',
-                        #'garden_surface',
-                        #'land_surface',
                         'number_of_facades',
                         'swimming_pool',
                         'state_of_the_building',
-                        #'zip_code_xx',
-                        #'price_m2',
                         'zip_code_ratio',
                         'HOUSE',
                         'APARTMENT'
@@ -167,7 +152,7 @@ def train_model():
     X_test = scaler.transform(X_test)
 
     #SAVE SCALER---------------------------------------------------------------
-    with open("airflow/plugins/scraper/model/immo_scaler.pkl","wb") as scalefile:
+    with open("dags/scraper/model/immo_scaler.pkl","wb") as scalefile:
         pickle.dump(scaler, scalefile)
     print('Saved Scaler')
 
@@ -181,7 +166,7 @@ def train_model():
     poly_model.fit(X_train_poly, Y_train)
 
     #SAVE POLY FEATURES---------------------------------------------------------------
-    with open("airflow/plugins/scraper/model/immo_poly_features.pkl","wb") as polyfeaturesfile:
+    with open("dags/scraper/model/immo_poly_features.pkl","wb") as polyfeaturesfile:
         pickle.dump(poly_features, polyfeaturesfile)
     print('Saved poly features')
 
@@ -198,7 +183,7 @@ def train_model():
     r2_test = r2_score(Y_test, y_test_predict)
 
     #SAVE MODEL---------------------------------------------------------------
-    with open("airflow/plugins/scraper/model/immo_model.pkl","wb") as modelfile:
+    with open("dags/scraper/model/immo_model.pkl","wb") as modelfile:
         pickle.dump(poly_model, modelfile)
     print('Saved Model')
 
@@ -206,3 +191,4 @@ def train_model():
     result = {'rmse_train':round(rmse_train,2),'r2_train':round(r2_train,2),'rmse_test':round(rmse_test,2),'r2_test':round(r2_test,2)}
     print(result)
 
+train_model()
