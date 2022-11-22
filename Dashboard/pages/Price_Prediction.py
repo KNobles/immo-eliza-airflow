@@ -87,8 +87,6 @@ layout = html.Div(
     )
 def sync_input(postal_code, locality, n_clicks_reset):
 
-    print('n clicks reset: ', n_clicks_reset)
-
     if n_clicks_reset is None:
 
         if ctx.triggered_id == 'locality':
@@ -120,8 +118,6 @@ def sync_input(postal_code, locality, n_clicks_reset):
 
 def predict_price(property_type,postal_code,area,rooms,terrace_area,facades,property_state,garden,kitchen,pool,fire,n_clicks_predict):
 
-    print('n clicks predict: ', n_clicks_predict)
-
     if n_clicks_predict is None:
         raise dash.exceptions.PreventUpdate
 
@@ -135,8 +131,6 @@ def predict_price(property_type,postal_code,area,rooms,terrace_area,facades,prop
             property_values.append(rooms)
         else:
             property_values.append(0)
-
-        print('area= ', area)
         
         if area < 10:
             property_values.append(10)
