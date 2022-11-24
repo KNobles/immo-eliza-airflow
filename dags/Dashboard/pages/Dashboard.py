@@ -13,11 +13,12 @@ import plotly.graph_objects as go
 dash.register_page(__name__, path='/')
 
 df = pd.read_csv("properties.csv")
+df = df[df['price']>=0]
 df_cp = pd.read_csv("belgian-cities-geocoded.csv")
 df_cp = df_cp[['postal', 'lat', 'lng']]
 df_cp.rename(columns={'postal':'postal_code'}, inplace=True)
 df = df.merge(df_cp, on='postal_code')
-df = df.drop('Unnamed: 0', axis=1)
+df_merged = df.drop('Unnamed: 0', axis=1)
 # df.to_csv('merged.csv', index=False)
 df_corr = df[['price', 'province', 'type_of_property', 'number_of_bedrooms', 'surface', 'fully_equipped_kitchen', 'furnished', 'open_fire', 'terrace', 
 'terrace_surface','garden', 'garden_surface', 'land_surface', 'number_of_facades', 'swimming_pool', 'state_of_the_building']]
@@ -25,7 +26,7 @@ df_corr = df[['price', 'province', 'type_of_property', 'number_of_bedrooms', 'su
 cat_values = ['region', 'province', 'type_of_property', 'subtype_of_property', 'fully_equipped_kitchen', 'furnished', 'open_fire', 'terrace', 'garden', 'swimming_pool', 'state_of_the_building']
 cont_values = ['number_of_bedrooms', 'surface', 'terrace_surface', 'garden_surface', 'land_surface', 'number_of_facades']
 
-df_map = df.groupby(['region'])[['price', 'lat', 'lng']].mean()
+df_map = df.groupby(['province'])[['price', 'lat', 'lng']].mean()
 df_map = df_map.reset_index()
 
 fig = px.scatter_mapbox(
@@ -34,11 +35,11 @@ fig = px.scatter_mapbox(
     lon='lng',
     color='price',
     size='price',
-    hover_data=['region', 'price'],
+    hover_data=['province', 'price'],
     color_continuous_scale=px.colors.sequential.thermal,
     size_max=40,
     template='plotly_dark',
-    mapbox_style='carto-positron',
+    mapbox_style='open-street-map',
 
 )
 fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0}, clickmode= 'event+select')
@@ -54,36 +55,43 @@ layout = html.Div([
     dcc.Dropdown(id='features' ,multi=True, value=df_corr.columns, options=[{'label': x, 'value': x} for x in df_corr.columns]),
     dcc.Graph(id='correlations', figure={},style={'height': '80vh'}),
     html.Br(),
+    dcc.Dropdown(id='cities' ,multi=True, value=[], options=[{'label': x, 'value': x} for x in df['locality'].unique()]),
+    dcc.Dropdown(id='type', multi=True,value=[],options=[{'label': x, 'value': x} for x in df['type_of_property'].unique()]),
+    dcc.Graph(id='bars', figure={},style={'height': '80vh'})
 ])
 
 
-@callback(Output(component_id='mean price map', component_property='figure'),Input(component_id='mean price map', component_property='clickData'), State('mean price map', 'figure'))
-def show_map(region_chosen, figure):
+@callback(
+    Output(component_id='mean price map', component_property='figure'),
+    Input(component_id='mean price map', component_property='clickData'),
+    State('mean price map', 'figure'))
+def show_map(province_chosen, figure):
 
-    if region_chosen:
-        print(f'click data: {region_chosen}')
-        click_region = region_chosen['points'][0]['customdata'][0]
-        df_region = df[df['region']==click_region]
-        df_province = df_region.groupby(['province'])[['price', 'lat', 'lng']].mean()
-        df_province = df_province.reset_index()
-        print(df_province)
+    if province_chosen:
+        print(f'click data: {province_chosen}')
+        clicked_province = province_chosen['points'][0]['customdata'][0]
+        df_province = df[df['province']==clicked_province]
+        df_locality = df_province.groupby(['locality'])[['price', 'lat', 'lng']].mean()
+        df_locality = df_locality.reset_index()
         figure = px.scatter_mapbox(
-            data_frame=df_province,
+            data_frame=df_locality,
             lat='lat',
             lon='lng',
             color='price',
             size='price',
-            hover_data=['province', 'price'],
+            hover_data=['locality', 'price'],
             color_continuous_scale=px.colors.sequential.thermal,
             size_max=40,
             template='plotly_dark',
-            mapbox_style='open-street-map',
+            mapbox_style='carto-positron',
         )
         figure = figure.update_layout(overwrite=True, margin={"r": 0, "t": 0, "l": 0, "b": 0}, clickmode= 'event+select')
 
     return figure
 
-@callback(Output(component_id='correlations', component_property='figure'),Input(component_id='features', component_property='value'))
+@callback(
+    Output(component_id='correlations', component_property='figure'),
+    Input(component_id='features', component_property='value'))
 def update_corr(corr_pick):
     df_correlations = df_corr[corr_pick].corr()
     x = list(df_correlations.columns)
@@ -101,3 +109,33 @@ def update_corr(corr_pick):
     return fig_corr
 
 
+@callback(
+    Output(component_id='bars', component_property='figure'),
+    Input(component_id='cities', component_property='value'),
+    Input(component_id='type',component_property='value'))
+def show_bars(cities, property_type):
+
+    df = df_merged[['locality','type_of_property','price']]
+    df = df.groupby(['locality','type_of_property'],as_index=False)['price'].mean()
+
+
+    if property_type==[] and cities==[]:
+        fig_bar=px.bar()
+    else:
+        if property_type==[]:
+            df_bars = df[df['locality'].isin(cities)]
+        elif cities==[]:
+            df_bars = df[df['type_of_property'].isin(property_type)]
+        else:
+            df_bars = df[df['locality'].isin(cities) & df['type_of_property'].isin(property_type)]
+        
+        fig_bar = px.bar(
+            data_frame=df_bars,
+            x='locality',
+            y='price',
+            color= 'type_of_property',
+            barmode='group',
+            labels={'x':'Cities', 'y':'Mean Price'}
+        )
+
+    return fig_bar
