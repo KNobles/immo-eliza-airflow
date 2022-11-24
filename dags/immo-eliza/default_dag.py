@@ -4,9 +4,6 @@ import os
 from airflow.operators.bash_operator import BashOperator
 from airflow.operators.docker_operator import DockerOperator
 from airflow.operators.dummy_operator import DummyOperator
-from dotenv import load_dotenv
-
-load_dotenv(".env")
 
 default_args = {
 'owner'                 : 'airflow',
@@ -40,7 +37,7 @@ with DAG('docker_operator_demo', default_args=default_args, schedule_interval="5
         api_version='auto',
         auto_remove=True,
         docker_url="unix://var/run/docker.sock",
-        environement={
+        environment={
             "AZURE_CONNECTION_STRING": os.getenv("AZURE_CONNECTION_STRING"),
             "STORAGE_CONTAINER": os.getenv("STORAGE_CONTAINER")
         },
@@ -53,7 +50,7 @@ with DAG('docker_operator_demo', default_args=default_args, schedule_interval="5
         api_version='auto',
         auto_remove=True,
         docker_url="unix://var/run/docker.sock",
-        environement={
+        environment={
             "AZURE_CONNECTION_STRING": os.getenv("AZURE_CONNECTION_STRING"),
             "STORAGE_CONTAINER": os.getenv("STORAGE_CONTAINER")
         },

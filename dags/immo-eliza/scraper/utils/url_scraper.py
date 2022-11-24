@@ -9,7 +9,8 @@ class Scraper:
     search_property_type_url = [search_apartment_url, search_house_url]
 
     def _get_properties_url(page_num):
-        path = os.path.join(os.getcwd(), "/driver/geckodriver")
+        path = os.path.join(os.getcwd(), "driver/geckodriver")
+        print(path)
         options = webdriver.FirefoxOptions()
         options.headless = True
         driver = webdriver.Firefox(executable_path=path,options=options)
@@ -24,7 +25,7 @@ class Scraper:
 
     def write_property_urls():
         os.makedirs(name="data", exist_ok=True)
-        data_folder_path = os.path.join(os.getcwd(), "/data")
+        data_folder_path = os.path.join(os.getcwd(), "data")
         data_file_location = os.path.join(data_folder_path, "realestate_urls.csv")
         with open(data_file_location, "a+", encoding="utf-8") as cache:
             existing = [l.rstrip("\n") for l in cache.readlines()]

@@ -1,9 +1,5 @@
 from azure.storage.blob import BlobServiceClient
-from dotenv import load_dotenv
 import os
-
-# Load environment variables from the .env file
-load_dotenv(".env")
 
 
 def download_file(local_file_desired_path: str, blob_name: str) -> str:

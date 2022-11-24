@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Build Docker images
-docker build -f dags/scraper/Dockerfile -t airflow_scraper:latest ./dags/scraper;
-docker build -f dags/scraper/Dockerfile -t airflow_train:latest ./dags/scraper_train_model;
-docker build -f dags/scraper/Dockerfile -t airflow_dashboard:latest ./dags/Dashboard;
+docker build -f dags/immo-eliza/scraper/Dockerfile -t airflow_scraper:latest ./dags/immo-eliza/scraper;
+docker build -f dags/immo-eliza/scraper/Dockerfile -t airflow_train:latest ./dags/immo-eliza/scraper_train_model;
+docker build -f dags/immo-eliza/scraper/Dockerfile -t airflow_dashboard:latest ./dags/immo-eliza/Dashboard;
 
 # Init Airflow
 docker-compose up airflow-init;
 # Run Airflow
-docker-compose up;
+docker-compose --env-file .env up;
