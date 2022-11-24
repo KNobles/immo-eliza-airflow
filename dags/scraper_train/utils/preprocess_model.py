@@ -40,8 +40,7 @@ def preprocess(input_data:Property):
         }
 
     # data = jsonable_encoder(input_data)
-    data = vars(input_data)
-    print(data)
+    data = json.dumps(input_data)
     df = pd.DataFrame(data=data, index=[0])
 
     df.loc[df["area"] < 10, "area"] = 10
@@ -73,14 +72,14 @@ def preprocess(input_data:Property):
     "surface": df["area"].get(0),
     "fully_equipped_kitchen": boolean_to_integer(df["equipped_kitchen"].get(0)),
     "open-fire": boolean_to_integer(df["open_fire"].get(0)),
-    "terrace_surface": df["terrace_area"].get(0),
-    "garden": boolean_to_integer(df["garden"].get(0)),
     "facades_number": df["facades_number"].get(0),
     "swimming_pool": boolean_to_integer(df["swimming_pool"].get(0)),
+    "terrace": boolean_to_integer(df["terrace"].get(0)),
+    "terrace_surface": df["terrace_area"].get(0),
     "state_of_the_building": df["building_state"].get(0),
     "zip_code_ratio": get_zip_ratio(df["zip_code"].get(0)),
-    "HOUSE": 1 if df["property_type"].get(0) == "HOUSE" else 0,
-    "APARTMENT": 1 if df["property_type"].get(0) == "APARTMENT" else 0
+    'HOUSE': 1 if df['property_type'].get(0) == 'HOUSE' else 0,
+    'APARTMENT': 1 if df['property_type'].get(0) == 'APARTMENT' else 0
     }
     return list(translated_property_data.values())
 
