@@ -7,6 +7,9 @@ from bs4 import BeautifulSoup
 from collections import defaultdict
 from utils.property_data_selection import Property
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from azure.storage.blob import BlobServiceClient
+from dotenv import load_dotenv
+from utils.upload_file import upload_file
 
 class PropertyDataWriter:
 
@@ -97,3 +100,5 @@ class PropertyDataWriter:
             data.to_csv(data_file_path, mode="a", index="False", header="False")
         else:
             data.to_csv(data_file_path)
+
+        upload_file(data_file_path, "properties_data_akl.csv")

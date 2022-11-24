@@ -1,3 +1,4 @@
+import os
 import pickle
 import statistics
 import numpy as np
@@ -11,11 +12,14 @@ from sklearn.metrics import r2_score
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import OneHotEncoder
+from azure.storage.blob import BlobServiceClient
+from dotenv import load_dotenv
+from utils.upload_file import upload_file
+from utils.download_file import download_file
 
 def train_model():
     #IMPORT RAW DATA---------------------------------------------------
-    
-    df = pd.read_csv("dags/scraper/data/properties.csv")
+    df = pd.read_csv(download_file("data/properties.csv", "data_properties_akl.csv"))
 
     #CLEAN & TRANSFORM RAW DATA----------------------------------------
 
@@ -167,8 +171,9 @@ def train_model():
     X_test = scaler.transform(X_test)
 
     #SAVE SCALER---------------------------------------------------------------
-    with open("dags/scraper_train/model/immo_scaler.pkl","wb") as scalefile:
+    with open("model/immo_scaler.pkl","wb") as scalefile:
         pickle.dump(scaler, scalefile)
+        upload_file(local_file_path="model/immo_scaler.pkl", blob_name="immo_scaler_akl.pkl")
     print('Saved Scaler')
 
 
@@ -181,8 +186,9 @@ def train_model():
     poly_model.fit(X_train_poly, Y_train)
 
     #SAVE POLY FEATURES---------------------------------------------------------------
-    with open("dags/scraper_train/model/immo_poly_features.pkl","wb") as polyfeaturesfile:
+    with open("model/immo_poly_features.pkl","wb") as polyfeaturesfile:
         pickle.dump(poly_features, polyfeaturesfile)
+        upload_file(local_file_path="model/immo_poly_features.pkl", blob_name="immo_poly_features_akl.pkl")
     print('Saved poly features')
 
     # predicting on training data-set
@@ -198,11 +204,11 @@ def train_model():
     r2_test = r2_score(Y_test, y_test_predict)
 
     #SAVE MODEL---------------------------------------------------------------
-    with open("dags/scraper_train/model/immo_model.pkl","wb") as modelfile:
+    with open("model/immo_model.pkl","wb") as modelfile:
         pickle.dump(poly_model, modelfile)
+        upload_file(local_file_path="model/immo_model.pkl", blob_name="immo_model_akl.pkl")
     print('Saved Model')
 
     #RESULT------------------------------------------------------------------
     result = {'rmse_train':round(rmse_train,2),'r2_train':round(r2_train,2),'rmse_test':round(rmse_test,2),'r2_test':round(r2_test,2)}
     print(result)
-
