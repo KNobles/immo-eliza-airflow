@@ -13,4 +13,4 @@ RUN pip install -r requirements.txt
 
 # EXPOSE 8050
 
-CMD gunicorn main:server
+CMD ["python", "main.py"]
