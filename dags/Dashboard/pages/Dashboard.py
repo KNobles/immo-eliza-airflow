@@ -26,7 +26,7 @@ df_corr = df[['price', 'province', 'type_of_property', 'number_of_bedrooms', 'su
 cat_values = ['region', 'province', 'type_of_property', 'subtype_of_property', 'fully_equipped_kitchen', 'furnished', 'open_fire', 'terrace', 'garden', 'swimming_pool', 'state_of_the_building']
 cont_values = ['number_of_bedrooms', 'surface', 'terrace_surface', 'garden_surface', 'land_surface', 'number_of_facades']
 
-df_map = df.groupby(['province'])[['price', 'lat', 'lng']].mean()
+df_map = df.groupby(['region'])[['price', 'lat', 'lng']].mean()
 df_map = df_map.reset_index()
 
 fig = px.scatter_mapbox(
@@ -35,11 +35,11 @@ fig = px.scatter_mapbox(
     lon='lng',
     color='price',
     size='price',
-    hover_data=['province', 'price'],
+    hover_data=['region', 'price'],
     color_continuous_scale=px.colors.sequential.thermal,
     size_max=40,
     template='plotly_dark',
-    mapbox_style='open-street-map',
+    mapbox_style='carto-positron',
 
 )
 fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0}, clickmode= 'event+select')
@@ -65,29 +65,55 @@ layout = html.Div([
     Output(component_id='mean price map', component_property='figure'),
     Input(component_id='mean price map', component_property='clickData'),
     State('mean price map', 'figure'))
-def show_map(province_chosen, figure):
+def show_map(click_data, figure):
 
-    if province_chosen:
-        print(f'click data: {province_chosen}')
-        clicked_province = province_chosen['points'][0]['customdata'][0]
-        df_province = df[df['province']==clicked_province]
-        df_locality = df_province.groupby(['locality'])[['price', 'lat', 'lng']].mean()
-        df_locality = df_locality.reset_index()
-        figure = px.scatter_mapbox(
-            data_frame=df_locality,
-            lat='lat',
-            lon='lng',
-            color='price',
-            size='price',
-            hover_data=['locality', 'price'],
-            color_continuous_scale=px.colors.sequential.thermal,
-            size_max=40,
-            template='plotly_dark',
-            mapbox_style='carto-positron',
-        )
-        figure = figure.update_layout(overwrite=True, margin={"r": 0, "t": 0, "l": 0, "b": 0}, clickmode= 'event+select')
+    if click_data:
 
-    return figure
+        choice = click_data['points'][0]['customdata'][0]
+
+        if choice in list(df['region'].unique()):
+            print(f'click data: {choice}')
+            df_region = df[df['region']==choice]
+            df_province = df_region.groupby(['province'])[['price', 'lat', 'lng']].mean()
+            df_province = df_province.reset_index()
+            figure = px.scatter_mapbox(
+                data_frame=df_province,
+                lat='lat',
+                lon='lng',
+                color='price',
+                size='price',
+                hover_data=['province', 'price'],
+                color_continuous_scale=px.colors.sequential.thermal,
+                size_max=40,
+                template='plotly_dark',
+                mapbox_style='open-street-map',
+            )
+            figure = figure.update_layout(overwrite=True, margin={"r": 0, "t": 0, "l": 0, "b": 0}, clickmode= 'event+select')
+
+            return figure
+
+        if choice in list(df['province'].unique()):
+            print(f'click data: {choice}')
+            df_province = df[df['province']==choice]
+            df_locality = df_province.groupby(['locality'])[['price', 'lat', 'lng']].mean()
+            df_locality = df_locality.reset_index()
+            figure = px.scatter_mapbox(
+                data_frame=df_locality,
+                lat='lat',
+                lon='lng',
+                color='price',
+                size='price',
+                hover_data=['locality', 'price'],
+                color_continuous_scale=px.colors.sequential.thermal,
+                size_max=40,
+                template='plotly_dark',
+                mapbox_style='carto-positron',
+            )
+            figure = figure.update_layout(overwrite=True, margin={"r": 0, "t": 0, "l": 0, "b": 0}, clickmode= 'event+select')
+
+            return figure
+
+    return dash.no_update
 
 @callback(
     Output(component_id='correlations', component_property='figure'),
