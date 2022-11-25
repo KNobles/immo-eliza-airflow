@@ -84,7 +84,7 @@ class PropertyDataWriter:
         data_file_path = os.path.join(data_folder_path, "properties.csv")
 
         with open(urls_file_path, "r") as f:
-            with ThreadPoolExecutor(max_workers=14) as exec:
+            with ThreadPoolExecutor(max_workers=12) as exec:
                 res = [exec.submit(PropertyDataWriter._append_to_dict, url, dic) for url in f.readlines()]
         
         for future in as_completed(res):

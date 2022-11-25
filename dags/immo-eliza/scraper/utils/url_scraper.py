@@ -1,6 +1,7 @@
 import os
 from selenium import webdriver
 from multiprocessing import get_context
+from multiprocessing import cpu_count
 from selenium.webdriver.common.by import By
 class Scraper:
     root_url = "https://www.immoweb.be/en"
@@ -21,6 +22,7 @@ class Scraper:
             for item in elements:
                 items.append(item.find_element(By.CLASS_NAME, "card__title-link").get_attribute("href"))
         driver.close()
+        print(items)
         return items
 
     def write_property_urls():
@@ -29,7 +31,7 @@ class Scraper:
         data_file_location = os.path.join(data_folder_path, "realestate_urls.csv")
         with open(data_file_location, "a+", encoding="utf-8") as cache:
             existing = [l.rstrip("\n") for l in cache.readlines()]
-        with get_context("fork").Pool() as pool:
+        with get_context("fork").Pool(int(cpu_count() / 2)) as pool:
             urls_generator = list(tuple(pool.map(Scraper._get_properties_url, range(1, 300))))
         with open(data_file_location, "a+", encoding="utf-8") as realestate_file:
             for property_url in urls_generator:
