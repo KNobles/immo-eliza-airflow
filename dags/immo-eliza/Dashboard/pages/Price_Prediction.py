@@ -3,7 +3,6 @@ from dash import dcc, html, ctx, Input, Output, callback, State
 import pandas as pd
 import pickle
 import numpy as np
-from preprocess_model import get_zip_ratio
 
 dash.register_page(__name__)
 
