@@ -39,7 +39,7 @@ fig = px.scatter_mapbox(
     color_continuous_scale=px.colors.sequential.thermal,
     size_max=40,
     template='plotly_dark',
-    mapbox_style='carto-positron',
+    mapbox_style='stamen-terrain',
 
 )
 fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0}, clickmode= 'event+select')
@@ -50,6 +50,7 @@ layout = html.Div([
     html.H1("Dashboard", style={'text-align': 'center'}),
     html.H2("Interactive map", style={'text-align': 'left'}),
     dcc.Graph(id='mean price map', figure=fig,style={'height': '80vh'}),
+    html.Button('Reset map', id='reset_map'),
     html.Br(),
     html.H2("Correlations", style={'text-align': 'left'}),
     dcc.Dropdown(id='features' ,multi=True, value=df_corr.columns, options=[{'label': x, 'value': x} for x in df_corr.columns]),
@@ -63,16 +64,40 @@ layout = html.Div([
 
 @callback(
     Output(component_id='mean price map', component_property='figure'),
+    Output('reset_map','n_clicks'),
     Input(component_id='mean price map', component_property='clickData'),
+    Input('reset_map','n_clicks'),
     State('mean price map', 'figure'))
-def show_map(click_data, figure):
-
+def show_map(click_data, n_clicks, figure):
+    # print('initial reset button ', n_clicks)
+    # print('click click: ',click_data)
     if click_data:
 
+        if n_clicks:
+            # print('after ',n_clicks)
+            fig = px.scatter_mapbox(
+                data_frame=df_map,
+                lat='lat',
+                lon='lng',
+                color='price',
+                size='price',
+                hover_data=['region', 'price'],
+                color_continuous_scale=px.colors.sequential.thermal,
+                size_max=40,
+                template='plotly_dark',
+                mapbox_style='stamen-terrain',
+
+            )
+            fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0}, clickmode= 'event+select')
+            return fig, None
+
         choice = click_data['points'][0]['customdata'][0]
+        click_data = None
+        # print('choice: ', choice)
 
         if choice in list(df['region'].unique()):
-            print(f'click data: {choice}')
+            # print(f'click data: {choice}')
+            # print('region chosen')
             df_region = df[df['region']==choice]
             df_province = df_region.groupby(['province'])[['price', 'lat', 'lng']].mean()
             df_province = df_province.reset_index()
@@ -90,10 +115,11 @@ def show_map(click_data, figure):
             )
             figure = figure.update_layout(overwrite=True, margin={"r": 0, "t": 0, "l": 0, "b": 0}, clickmode= 'event+select')
 
-            return figure
+            return figure, None
 
         if choice in list(df['province'].unique()):
-            print(f'click data: {choice}')
+            # print('province chosen')
+            # print(f'click data: {choice}')
             df_province = df[df['province']==choice]
             df_locality = df_province.groupby(['locality'])[['price', 'lat', 'lng']].mean()
             df_locality = df_locality.reset_index()
@@ -111,7 +137,8 @@ def show_map(click_data, figure):
             )
             figure = figure.update_layout(overwrite=True, margin={"r": 0, "t": 0, "l": 0, "b": 0}, clickmode= 'event+select')
 
-            return figure
+            return figure, None
+        
 
     return dash.no_update
 
